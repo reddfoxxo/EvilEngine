@@ -17,11 +17,13 @@ int main(int argc, const char* argv[])
 
 	homework1_test();
 
+	/*
 	extern void lecture7_thread_test();
 	lecture7_thread_test();
 
 	extern void lecture7_queue_test();
 	lecture7_queue_test();
+	*/
 
 	debug_set_print_mask(k_print_warning | k_print_error);
 
