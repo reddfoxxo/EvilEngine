@@ -1,2 +1,3 @@
 C:\projects\gamearch-2022\ga2022\src\x64\Debug\ga2022.exe
+D:\rpi\f22\ga\EvilEngine-main\src\x64\Debug\ga2022.exe
 D:\GitHub\EvilEngine\src\x64\Debug\ga2022.exe
