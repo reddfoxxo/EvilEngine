@@ -124,11 +124,12 @@ void trace_duration_push(trace_t* trace, const char* name)
 	int tid = GetCurrentThreadId();
 	trace_queue_t* queue = trace_get_queue(trace, tid);
 	if (queue == NULL) return;
+	timer_object_update(trace->timer);
 	uint64_t time = timer_object_get_us(trace->timer);
 	queue_push(queue->queue, (void*) name);
 
-	char* buffer = heap_alloc(trace->heap, 52 + strlen(name) , 8);
-	sprintf_s(buffer, 52 + strlen(name), "\t\t{\"name\":\"%s\",\"ph\":\"B\",\"pid\":\"0\",\"tid\":\"%d\",\"ts\":\"%llu\"\n", name, tid, time);
+	char* buffer = heap_alloc(trace->heap, 64 + strlen(name) , 8);
+	sprintf_s(buffer, 64 + strlen(name), "\t\t{\"name\":\"%s\",\"ph\":\"B\",\"pid\":\"0\",\"tid\":\"%d\",\"ts\":\"%llu\"},\n", name, tid, time);
 	queue_push(trace->events, buffer);
 	trace->num_events++;
 	if (trace->num_events == trace->capacity) trace_f_write(trace);
@@ -140,12 +141,14 @@ void trace_duration_pop(trace_t* trace)
 	int tid = GetCurrentThreadId();
 	trace_queue_t* queue = trace_get_queue(trace, tid);
 	if (queue == NULL) return;
+	timer_object_update(trace->timer);
 	uint64_t time = timer_object_get_us(trace->timer);
 	char* name = queue_pop(queue->queue);
 
-	char* buffer = heap_alloc(trace->heap, 52 + strlen(name), 8);
-	sprintf_s(buffer, 52 + strlen(name), "\t\t{\"name\":\"%s\",\"ph\":\"E\",\"pid\":\"0\",\"tid\":\"%d\",\"ts\":\"%llu\"\n", name, tid, time);
+	char* buffer = heap_alloc(trace->heap, 64 + strlen(name), 8);
+	sprintf_s(buffer, 64 + strlen(name), "\t\t{\"name\":\"%s\",\"ph\":\"E\",\"pid\":\"0\",\"tid\":\"%d\",\"ts\":\"%llu\"},\n", name, tid, time);
 	queue_push(trace->events, buffer);
+	trace->num_events++;
 	if (trace->num_events == trace->capacity) trace_f_write(trace);
 }
 
