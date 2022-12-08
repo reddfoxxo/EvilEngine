@@ -3,6 +3,8 @@
 // Entity Component System
 // Framework for game entities and their components.
 
+#include "fs.h"
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -25,6 +27,10 @@ typedef struct ecs_query_t
 	int entity;
 } ecs_query_t;
 
+void ecs_save_game(heap_t* heap, ecs_t* ecs, fs_t* fs);
+
+void ecs_load_game(heap_t* heap, ecs_t* ecs, fs_t* fs);
+
 // Create an entity component system.
 ecs_t* ecs_create(heap_t* heap);
 
@@ -35,7 +41,7 @@ void ecs_destroy(ecs_t* ecs);
 void ecs_update(ecs_t* ecs);
 
 // Register a type of component with the entity system.
-int ecs_register_component_type(ecs_t* ecs, const char* name, size_t size_per_component, size_t alignment);
+int ecs_register_component_type(ecs_t* ecs, const char* name, size_t size_per_component, size_t alignment, bool save);
 
 // Return the size of a type of component registered with the sytem.
 size_t ecs_get_component_type_size(ecs_t* ecs, int component_type);

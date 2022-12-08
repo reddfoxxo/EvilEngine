@@ -95,12 +95,12 @@ frogger_game_t* frogger_game_create(heap_t* heap, fs_t* fs, wm_window_t* window,
 	game->timer = timer_object_create(heap, NULL);
 	
 	game->ecs = ecs_create(heap);
-	game->transform_type = ecs_register_component_type(game->ecs, "transform", sizeof(transform_component_t), _Alignof(transform_component_t));
-	game->camera_type = ecs_register_component_type(game->ecs, "camera", sizeof(camera_component_t), _Alignof(camera_component_t));
-	game->model_type = ecs_register_component_type(game->ecs, "model", sizeof(model_component_t), _Alignof(model_component_t));
-	game->player_type = ecs_register_component_type(game->ecs, "player", sizeof(player_component_t), _Alignof(player_component_t));
-	game->block_type = ecs_register_component_type(game->ecs, "block", sizeof(block_component_t), _Alignof(block_component_t));
-	game->name_type = ecs_register_component_type(game->ecs, "name", sizeof(name_component_t), _Alignof(name_component_t));
+	game->transform_type = ecs_register_component_type(game->ecs, "transform", sizeof(transform_component_t), _Alignof(transform_component_t), true);
+	game->camera_type = ecs_register_component_type(game->ecs, "camera", sizeof(camera_component_t), _Alignof(camera_component_t), false);
+	game->model_type = ecs_register_component_type(game->ecs, "model", sizeof(model_component_t), _Alignof(model_component_t), false);
+	game->player_type = ecs_register_component_type(game->ecs, "player", sizeof(player_component_t), _Alignof(player_component_t), true);
+	game->block_type = ecs_register_component_type(game->ecs, "block", sizeof(block_component_t), _Alignof(block_component_t), true);
+	game->name_type = ecs_register_component_type(game->ecs, "name", sizeof(name_component_t), _Alignof(name_component_t), false);
 
 	/*
 	game->net = net_create(heap, game->ecs);
@@ -422,6 +422,7 @@ static void update_players(frogger_game_t* game)
 	float speed = dt * 2;
 
 	uint32_t key_mask = wm_get_key_mask(game->window);
+	uint32_t mouse_mask = wm_get_mouse_mask(game->window);
 
 	uint64_t k_query_mask = (1ULL << game->transform_type) | (1ULL << game->player_type);
 
@@ -484,6 +485,14 @@ static void update_players(frogger_game_t* game)
 			if (key_mask & k_key_right)
 			{
 				move.translation = vec3f_add(move.translation, vec3f_scale(vec3f_right(), speed));
+			}
+			if (mouse_mask & k_mouse_button_left)
+			{
+				ecs_save_game(game->heap, game->ecs, game->fs);
+			}
+			if (mouse_mask & k_mouse_button_right)
+			{
+				ecs_load_game(game->heap, game->ecs, game->fs);
 			}
 			transform_multiply(&transform_comp->transform, &move);
 		}
